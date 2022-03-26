@@ -25,7 +25,7 @@ const app = {
   },
   getName: (ev) =>{
     let city = document.getElementById('nameCity').value;
-    let key = "85af1579f962c52499b41e25912beb5b";
+    let key = "keyApi";
     let lang = 'en';
     let units = 'metric';
     let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&cnt=40&units=${units}&APPID=${key}&lang=${lang}`;
@@ -43,7 +43,7 @@ const app = {
   compareCity: (ev) => {
     let cityCompare1 = document.getElementById('nameCompareCity1').value;
     let cityCompare2 = document.getElementById('nameCompareCity2').value;
-    let key = "85af1579f962c52499b41e25912beb5b";
+    let key = "keyApi";
     let lang = 'en';
     let units = 'metric';
     Promise.all([
@@ -70,7 +70,7 @@ const app = {
     //use the values from latitude and longitude to fetch the weather
    let lat = document.getElementById('latitude').value;
     let lon = document.getElementById('longitude').value;
-    let key = '85af1579f962c52499b41e25912beb5b';
+    let key = 'keyApi';
     let lang = 'en';
     let units = 'metric';
     let url = `http://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${key}&units=${units}&lang=${lang}`;
@@ -188,7 +188,7 @@ const app = {
     }
     let latitude = resp.coord.lat;
     let longitude = resp.coord.lon;
-    let key = "85af1579f962c52499b41e25912beb5b";
+    let key = "keyApi";
     let lang = 'en';
     let units = 'metric';
 
