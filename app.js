@@ -39,8 +39,22 @@ const app = {
         app.showWeather(data);
       })
       .catch(console.err);
+
+      let keyUnsplash = "keyApi";
+      let urlUnsplash = `https://api.unsplash.com/search/photos/?client_id=${keyUnsplash}&query=${city}`;
+      fetch(urlUnsplash)
+        .then(( response ) => {
+          if (!response.ok) throw new Error(response.statusText);
+          return response.json();
+        })
+        .then((dataUnsplash) =>{
+          
+          app.showImage(dataUnsplash);
+        })
+        .catch(console.err);
   },
   compareCity: (ev) => {
+    document.getElementById('myChart').style.display = "block";
     let cityCompare1 = document.getElementById('nameCompareCity1').value;
     let cityCompare2 = document.getElementById('nameCompareCity2').value;
     let key = "keyApi";
@@ -57,7 +71,7 @@ const app = {
     }).then(function (data) {
       // Log the data to the console
       // You would do something with both sets of data here
-      console.log(data);
+      
       app.showCompareCity(data);
     }).catch(function (error) {
       // if there's an error, log it
@@ -92,7 +106,7 @@ const app = {
         return resp.json();
       })
       .then((data) => {
-        console.log(data)
+        
         app.showWeather(data);
       })
   },
@@ -118,7 +132,12 @@ const app = {
   //Weather Daily
   showFetchWeather: (respWeather) =>{
     let row = document.querySelector('.weather.row');
-    console.log(respWeather)
+
+    function cutString(){
+      var stringVal = respWeather.timezone;
+     return stringVal = stringVal.substring(stringVal.indexOf('/') + 1, stringVal.length);
+    }
+    
     row.innerHTML = respWeather.daily
       .map((day, idx) => {
         if (idx < 6 && idx != 0) {
@@ -130,7 +149,7 @@ const app = {
               <div class="front" id="front">
               
               <h5 class="card-title p-2">${dt.toDateString()}</h5>
-              <h2>${respWeather.timezone}</h2>
+              <h2>${cutString(respWeather.timezone)}</h2>
                 <img
                   src="http://openweathermap.org/img/wn/${
                     day.weather[0].icon
@@ -199,7 +218,7 @@ const app = {
         return respWeather.json();
       })
       .then((dataWeather) => {
-        console.log(dataWeather)
+        
         app.showFetchWeather(dataWeather);
       })
       .catch(console.err);
@@ -248,7 +267,7 @@ const app = {
 },
   showWeatherLonLat: (resp) => {
     let row = document.querySelector('.weather.row');
-    console.log(resp)
+    
     row.innerHTML = resp.daily
       .map((day, idx) => {
         if (idx < 6) {
@@ -256,8 +275,8 @@ const app = {
           let sr = new Date(day.sunrise * 1000).toTimeString();
           let ss = new Date(day.sunset * 1000).toTimeString();
           return `<div class="col">
-          <div class="cardFlip" id="card">
-              <div class="front" id="front">
+          <div class="cardFlip" >
+              <div class="front" >
               
               <h5 class="card-title p-2">${dt.toDateString()}</h5>
               <h2>${resp.timezone}</h2>
@@ -274,7 +293,7 @@ const app = {
                   <p class="card-text"><b>High:</b> ${day.temp.max}&deg;C</p>
                   <p class="card-text"><b>Low:</b> ${day.temp.min}&deg;C</p>
           </div>
-                  <div class="card-body back" id="back">
+                  <div class="card-body back" >
                 <div class="card-body">
                   <p class="card-text"><b>High Feels like: </b>${
                     day.feels_like.day
@@ -309,6 +328,27 @@ const app = {
   }
   cards.forEach((card) => card.addEventListener("click",  flipCard));
   },
+  showImage: (unsplashPhoto) =>{
+    
+    let imageUnsplash = document.getElementById('imageUnsplash');
+    for(let i = 0; i < unsplashPhoto.results.length; i++){
+
+      if(unsplashPhoto.results[i].user.last_name == null || unsplashPhoto.results[i].user.last_name == undefined){
+        unsplashPhoto.results[i].user.last_name = "";
+      }
+      if(unsplashPhoto.results[i].user.first_name == null || unsplashPhoto.results[i].user.first_name == undefined){
+        unsplashPhoto.results[i].user.first_name = "";
+      }
+
+      imageUnsplash.insertAdjacentHTML('afterbegin', 
+      `<figure class="figureUnsplash">
+      <a href="${unsplashPhoto.results[i].urls.full}" class="figureUnsplash__image-link" target="_blank"><img class="figureUnsplash__image" src="${unsplashPhoto.results[i].urls.thumb}" alt="${unsplashPhoto.results[i].alt_description}"/></a>
+      <figcaption class="figureUnsplash__user">
+      <a href="${unsplashPhoto.results[i].user.links.html}" target="_blank">© ${unsplashPhoto.results[i].user.first_name} ${unsplashPhoto.results[i].user.last_name}</a></figcaption>
+      </figure>`);
+    }
+    
+  },
   showCompareCity: (compareCity) => {
 
     let rowWeather = document.getElementById('weatherApp');
@@ -330,29 +370,31 @@ const app = {
     type: 'bar',
     data: {
         labels: [city[0].name, city[1].name],
-        datasets: [{
-            label: '# of Votes',
+        datasets: [
+          {
+            label: '',
             data: [compareCity[0].main.temp, compareCity[1].main.temp],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
+                
             ],
             borderColor: [
                 'rgba(255, 99, 132, 1)',
                 'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
+                
             ],
-            borderWidth: 1
-        }]
+            borderWidth: 1,
+            fill: false
+        }
+      ]
     },
     options: {
+      plugins:{
+      legend: {
+        display: false,
+      }
+    },
         scales: {
             y: {
                 beginAtZero: true
